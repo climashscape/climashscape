@@ -34,6 +34,12 @@
 - **All file writes go through Write/Edit-type tools**: Write for new files, Edit for changes. Bash is for reading, searching, running and process management only; redirection (`>`/`>>`), heredocs, `tee`, in-place substitution (`sed -i`) and writing files from within scripts all count as "writing with Bash" — don't. The reason: writes become auditable, diffable and permission-prompted, and are immune to quoting and escaping issues.
 - Boundary: `git mv`/`git rm`/`mv` — version-control operations and file moves — don't count as "content writes" and may use Bash; after moving, still read back to confirm.
 - Batch edits to structured data (many same-shaped files, the same change repeated) prefer Edit one by one; if a script is genuinely needed, write the script to disk with Write first and then run it, so it stays reviewable.
+- **Back off and retry on faults; never silently degrade to a weaker path**: when a transient resource runs short, release it and retry; any degradation must be logged and the gap reported.
+- For database reads and cross-checks, prefer inline read-only queries (`file:…?mode=ro`) over dropping SQL scripts; complex multi-step analysis is the exception.
+- **Modify third-party apps through a rollback-friendly side path**: leave the original untouched; keep the patched copy and the rollback commands on file.
+- **Run a full reconciliation over registries periodically** — incremental registration alone is not trusted.
+- **On write anomalies (mojibake, corruption), stop immediately and verify what is actually on disk**; passing a syntax check is not proof of integrity.
+- **Persistence config keys use identifiers that survive restarts** — never embed volatile segments such as PIDs.
 
 ## Local machine conventions (Linux)
 
@@ -47,6 +53,17 @@
 - At the end, check for leftover processes and temp files: batch and audit artifacts live under `/tmp/<task>/`; clean them up afterwards, or state plainly where they were kept.
 - **Never bypass the pre-push gate**: a repository's `pre-push` gate (tests, lint, type checks) must not be deleted or hollowed out. A long-running gate lets `git push` fail when the remote reclaims the connection mid-gate — so run the gate's commands manually first (read the script, don't guess), then `git push --no-verify`.
 - **A security-hook block is a gate**: when Write/Edit is blocked by a security hook (Mimosa and the like), treat it as a gate — redesign legitimately (parameterize, split into layers, document the procedure) and never route around it with Bash redirection, heredocs or script writes. After 2 blocks of the same shape, or if the reason looks dubious (e.g. blocking a zero-interpolation constant), stop and report for a decision; don't keep sparring with the scanner.
+- **Guard against in-memory write-back when editing a running app's config**: back up first; after writing, re-read to confirm it took effect; if it won't stick, quit the app and change it then.
+- **Tests must not occupy user-visible shared state such as the clipboard**: if unavoidable, back it up first and restore even on abnormal exit paths.
+- **Isolate dev/verification instances up front**: point the data directory, user-data-dir and single-instance lock at temporary copies; clean up only processes you started.
+- **Install flatpak apps per-user by default**: uninstall with `--delete-data` and check `~/.var/app` for leftovers.
+- **Clash config changes go to the Merge.yaml source layer only**: on subscription failures, probe each endpoint; extend the fake-ip trusted segment for IPv6.
+- **Before writing directly to an app's own database, verify every field's set and type against the official interface**: text fields must be stored as `str`, to prevent BLOB type drift.
+- **New provider model parameter mappings get tested against the real endpoint before being finalized** — never trust documentation alone.
+- **On session 402 / context-too-large errors, shrink the context or start a new session** — don't retry verbatim; a 402 with `retryable=false` is not transient.
+- **System diagnostics and log triage sample within bounds first** (tail, time windows, targeted grep) — never full scans.
+- **When X diagnostic tools can't connect, check the client connection limit first** and fall back to single-connection native capture instead of spawning more tools.
+- **Never move a venv across filesystems**: exFAT/NTFS break its symlinks — rebuild it on the target machine.
 
 ## Boundaries
 
