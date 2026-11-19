@@ -17,7 +17,7 @@
 
 ## 内容
 
-四节，七条协作原则。
+四节，八条协作原则。
 
 **协作原则**
 
@@ -28,14 +28,15 @@
 5. **最小化与复用**——工具按需安装且每件能说出用途；写新东西前先查既有资产与现成方案。
 6. **同一问题同类失败 ≥3 次就换方案**——不做第四次微修；换方案前先报告已试过的失败路径。
 7. **故障处置**——出故障就停手，如实报告现状、影响面与回滚路径；能安全回滚的先回滚。
+8. **指令歧义先复述确认**——指令对象、范围或口径含糊时，先复述自己的理解请用户确认，拿到答复再动手；做错即完整回滚。
 
 **工作偏好**：语言与文风约定、面向人的说明文字按 ASD-STE100 写到八成、配图守则（结构图用 mermaid、任意来源图片积极内嵌、删减法与复杂度预算）、仅在复用场景明确时才做通用化、最终输出先结论后细节，以及涉及操作时的交付标准（可复制命令 + 验收标准；影响面大再加已知坑 + 回滚预案），未经实跑的命令明确标注。
 
-**工具纪律**：写入一律走 Write/Edit 类工具、结构化数据批量改动逐个 Edit；容错退避禁静默降级、读库核对优先内联只读查询、改第三方应用走可回滚旁路、登记类流水定期全量对账、写入见异常即停手核盘、持久化配置键用稳定标识。
+**工具纪律**：写入一律走 Write/Edit 类工具、结构化数据批量改动逐个 Edit；容错退避禁静默降级、读库核对优先内联只读查询、改第三方应用走可回滚旁路、登记类流水定期全量对账、写入见异常即停手核盘、持久化配置键用稳定标识、给宿主库写删除标记前验证差集语义。
 
-**本机操作约定（Linux）**：Motrix 下载、本地 jev 判断栈、`/tmp/<task>/` 暂存、安全的杀进程约定、`pkexec` 提权及其免密范围，运行中配置防内存写回、测试不占剪贴板等共享状态、dev 实例隔离、flatpak 按用户安装、Clash 只改源头层、直写应用数据库先核字段类型、供应商参数映射实测、402 先缩上下文、诊断有界采样、X 连接上限、venv 不跨盘搬移，以及不许绕过的门禁（pre-push 门禁与安全钩子拦截）。
+**本机操作约定（Linux）**：Motrix 下载、本地 jev 判断栈、`/tmp/<task>/` 暂存、安全的杀进程约定、`pkexec` 提权及其免密范围，运行中配置防内存写回、测试不占剪贴板等共享状态、dev 实例隔离、flatpak 按用户安装、Clash 只改源头层、直写应用数据库先核字段类型、供应商参数映射实测、402 先缩上下文、诊断有界采样、X 连接上限、venv 不跨盘搬移，无人值守长任务跑满约定窗口到停点、用户不在场不执行可中断桌面或会话的高危命令、定期核验备份最近成功快照时间超期即报，以及不许绕过的门禁（pre-push 门禁与安全钩子拦截）。
 
-**边界**：隐私与数据主权（含「读入即外发」——凭据一进上下文就随请求发往模型提供方，故只打印键名或哈希、不打印值）、署名约定、不把环境相关的断言写进要分享的产物。
+**边界**：隐私与数据主权（含「读入即外发」——凭据一进上下文就随请求发往模型提供方，故只打印键名或哈希、不打印值）、署名约定、公开仓库提交统一用 noreply 邮箱，不把环境相关的断言写进要分享的产物。
 
 ## 用法
 
@@ -82,7 +83,7 @@ Everything else is agent- and OS-agnostic; these two parts are not:
 
 ### Contents
 
-Four sections, seven collaboration principles.
+Four sections, eight collaboration principles.
 
 **协作原则 — Collaboration principles**
 
@@ -93,14 +94,15 @@ Four sections, seven collaboration principles.
 5. **Minimize and reuse** — install tools on demand and be able to justify each one; check existing assets before writing anything new.
 6. **Three same-class failures → change the approach** — not a fourth micro-fix; report the failed paths first.
 7. **Incident handling** — stop, report state / blast radius / rollback path honestly, roll back when that is safe.
+8. **Paraphrase ambiguous instructions first** — when the object, scope or criteria of an instruction is vague, restate your understanding and get confirmation before acting; roll back completely if it turns out wrong.
 
 **工作偏好 — Work preferences**: language conventions (Chinese dialogue, English for outward-facing artifacts), human-facing prose at 80% of ASD-STE100, diagram rules (Mermaid for structure, images from any source embedded actively, a deletion-first discipline with a complexity budget), design for reuse only when the reuse case is concrete, conclusion-first output, and a delivery checklist for anything actionable — copy-pasteable commands and acceptance criteria, plus known pitfalls and a rollback plan when the blast radius is large — with unverified commands marked as such.
 
-**工具纪律 — Tool discipline**: all writes through Write/Edit-type tools, structured-data batch edits one Edit at a time; back off and retry with no silent degradation, inline read-only queries for database cross-checks, rollback-friendly side paths for third-party apps, periodic full reconciliation for registries, stop-and-verify on write anomalies, and restart-stable persistence keys.
+**工具纪律 — Tool discipline**: all writes through Write/Edit-type tools, structured-data batch edits one Edit at a time; back off and retry with no silent degradation, inline read-only queries for database cross-checks, rollback-friendly side paths for third-party apps, periodic full reconciliation for registries, stop-and-verify on write anomalies, restart-stable persistence keys, and set-difference verification before writing deletion marks into a host database.
 
-**本机操作约定（Linux）— Local machine conventions**: downloads through Motrix rather than curl/wget, the local jev judgment stack, batch and audit artifacts under `/tmp/<task>/`, safe process killing, root commands through `pkexec` instead of handing the user terminal commands, write-back protection for running-app configs, tests leaving user-visible shared state alone, isolated dev instances, per-user flatpak installs, Clash edits at the Merge.yaml source layer only, field/type checks before direct database writes, real-endpoint testing for provider parameter mappings, shrink-context on 402 errors, bounded sampling for diagnostics, X connection-limit checks, no cross-filesystem venv moves — plus never-bypass gates (the pre-push gate and security-hook blocks).
+**本机操作约定（Linux）— Local machine conventions**: downloads through Motrix rather than curl/wget, the local jev judgment stack, batch and audit artifacts under `/tmp/<task>/`, safe process killing, root commands through `pkexec` instead of handing the user terminal commands, write-back protection for running-app configs, tests leaving user-visible shared state alone, isolated dev instances, per-user flatpak installs, Clash edits at the Merge.yaml source layer only, field/type checks before direct database writes, real-endpoint testing for provider parameter mappings, shrink-context on 402 errors, bounded sampling for diagnostics, X connection-limit checks, no cross-filesystem venv moves, unattended long tasks run through the full agreed window to the stop point, no desktop-interrupting high-risk commands while the user is away, periodic verification of the latest successful backup snapshot time with alerts on staleness — plus never-bypass gates (the pre-push gate and security-hook blocks).
 
-**边界 — Boundaries**: privacy and data sovereignty — including "reading is sending": anything read into context travels to the model provider, so print key names or hashes, never values — plus attribution, and no environment-specific claims in shareable artifacts.
+**边界 — Boundaries**: privacy and data sovereignty — including "reading is sending": anything read into context travels to the model provider, so print key names or hashes, never values — plus attribution, a noreply email for public-repo commits, and no environment-specific claims in shareable artifacts.
 
 ### Usage
 

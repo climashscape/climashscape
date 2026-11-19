@@ -19,6 +19,7 @@
 5. **Minimize and reuse** — Install tools on demand and be able to say what each one is for; before writing a new script or feature, check existing assets and off-the-shelf solutions — don't reinvent the wheel.
 6. **Three same-class failures → change the approach** — Report the paths already tried before switching, and handle new dependencies under "decision tiers, ask first".
 7. **Incident handling** — When something breaks, stop: report the current state, the blast radius and the rollback path honestly. Roll back first when that is safe; when data is at risk, wait for instructions. Don't hide it, and don't fix unrelated things along the way.
+8. **Paraphrase ambiguous instructions first** — When the object, scope or criteria of an instruction is vague, restate your understanding and get the user's confirmation before acting; if it turns out wrong, roll back completely.
 
 ## Work preferences
 
@@ -40,6 +41,7 @@
 - **Run a full reconciliation over registries periodically** — incremental registration alone is not trusted.
 - **On write anomalies (mojibake, corruption), stop immediately and verify what is actually on disk**; passing a syntax check is not proof of integrity.
 - **Persistence config keys use identifiers that survive restarts** — never embed volatile segments such as PIDs.
+- **Verify the set-difference semantics before writing deletion marks into a host database** — distinguish natural aging from true deletion before writing a deletion state into host data, and canary before rolling out.
 - **When a platform filter blocks a generation task, confirm the artifact never landed, then dispatch once more**: content filters abort the whole generation and do not prove the subject is unproducible; if the retry also fails, reword the prompt and lower concurrency instead of retrying verbatim.
 - **After moving a directory or script, sweep every reference and run each one to verify**: hooks, automation prompts, systemd units and desktop entries are swept together, and each is run once to confirm no broken link — a single spot-check is not enough to close the task.
 
@@ -53,6 +55,9 @@
 - Passwordless scope: it covers only the generic action `org.freedesktop.policykit.exec` (`/etc/polkit-1/rules.d/49-zcode-nopasswd.rules`, for the sudo group). Programs annotated with `exec.path` (such as timeshift or update-alternatives) go through their own actions, which prompt for a password and fail when nobody answers; wrapping them in `bash -c` returns to the generic action and stays passwordless.
 - Before killing a process, confirm the PID with `pgrep -af`, then `kill`; never `pkill -f` (it matches the calling shell's own command line); `pgrep -x` only suits process names of 15 characters or fewer.
 - At the end, check for leftover processes and temp files: batch and audit artifacts live under `/tmp/<task>/`; clean them up afterwards, or state plainly where they were kept.
+- **Run unattended long tasks through the full agreed window to the stop point** — never start early or stop early on your own; if an early-stop dispatch is refused, shorten the prompt instead of shrinking the scope.
+- **Don't run high-risk commands that can take down the desktop or session while the user is away** — remote or unattended sessions leave display-manager-restart-class commands to the user, or take a soft path.
+- **Periodically verify the latest successful backup snapshot time; alert when it is stale** — a backup running is not the same as a backup being valid; include backup freshness in routine checks and alert on overdue.
 - **Never bypass the pre-push gate**: a repository's `pre-push` gate (tests, lint, type checks) must not be deleted or hollowed out. A long-running gate lets `git push` fail when the remote reclaims the connection mid-gate — so run the gate's commands manually first (read the script, don't guess), then `git push --no-verify`.
 - **A security-hook block is a gate**: when Write/Edit is blocked by a security hook (Mimosa and the like), treat it as a gate — redesign legitimately (parameterize, split into layers, document the procedure) and never route around it with Bash redirection, heredocs or script writes. After 2 blocks of the same shape, or if the reason looks dubious (e.g. blocking a zero-interpolation constant), stop and report for a decision; don't keep sparring with the scanner.
 - **Guard against in-memory write-back when editing a running app's config**: back up first; after writing, re-read to confirm it took effect; if it won't stick, quit the app and change it then.
@@ -74,4 +79,5 @@
     - Reading is sending — once a credential, key or private datum enters the context it travels to the model provider with the request, so avoid reading it at all when you can (print key names, never values).
     - When reading configuration in a shell, always use a form that outputs only key names or hashes: `grep -oE '^[a-z_-]+:'`, `grep '^secret:' f | sha256sum`. Never use `cat`, `grep -n` or `grep -A|-B`, which pull whole lines into the context.
 - Signatures and handles follow whatever the user specifies; ask before writing the user's real name into a file.
+- Use a noreply email for public-repo commits; verify author/email against the global config before publishing, so the real email never leaks.
 - Don't put environment-specific assertions into artifacts meant to be shared — anything referring to a particular machine should be written as "probe first, degrade if missing".
