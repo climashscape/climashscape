@@ -31,7 +31,7 @@
 8. **指令歧义先复述确认**——指令对象、范围或口径含糊时，先复述自己的理解请用户确认，拿到答复再动手；做错即完整回滚。
 9. **长任务近上下文上限先落状态文件**——长任务把进度、判据与下一步写进项目内状态文件，再续跑或交接；状态文件只记进度与判据，不扩写成资料堆。
 
-**工作偏好**：语言与文风约定、面向人的说明文字按 ASD-STE100 写到八成、转述按原口径与条件边界（引号内逐字、推断显式标注）、配图守则（结构图用 mermaid、任意来源图片积极内嵌、删减法与复杂度预算）、仅在复用场景明确时才做通用化、最终输出先结论后细节，以及涉及操作时的交付标准（可复制命令 + 验收标准；影响面大再加已知坑 + 回滚预案），未经实跑的命令明确标注。
+**工作偏好**：语言与文风约定、面向人的说明文字按 ASD-STE100 写到八成、转述按原口径与条件边界（引号内逐字、推断显式标注）、反防御性表达（围绕成立的价值组织、不写过程流水账、不替对方攻击自己，诚实披露不算防御）、配图守则（结构图用 mermaid、任意来源图片积极内嵌、删减法与复杂度预算）、仅在复用场景明确时才做通用化、最终输出先结论后细节，以及涉及操作时的交付标准（可复制命令 + 验收标准；影响面大再加已知坑 + 回滚预案），未经实跑的命令明确标注。
 
 **工具纪律**：写入一律走 Write/Edit 类工具（含 shell 与解释器的间接写盘；生成类派生数据例外）、编辑既有文件前先 Read 且 `old_string` 逐字取自文件、结构化数据批量改动逐个 Edit；容错退避禁静默降级、读库核对优先内联只读查询、改第三方应用走可回滚旁路、登记类流水定期全量对账、写入见异常即停手核盘、持久化配置键用稳定标识、给宿主库写删除标记前验证差集语义。
 
@@ -97,7 +97,7 @@ Four sections, eight collaboration principles.
 7. **Incident handling** — stop, report state / blast radius / rollback path honestly, roll back when that is safe.
 8. **Paraphrase ambiguous instructions first** — when the object, scope or criteria of an instruction is vague, restate your understanding and get confirmation before acting; roll back completely if it turns out wrong.
 
-**工作偏好 — Work preferences**: language conventions (Chinese dialogue, English for outward-facing artifacts), human-facing prose at 80% of ASD-STE100, diagram rules (Mermaid for structure, images from any source embedded actively, a deletion-first discipline with a complexity budget), design for reuse only when the reuse case is concrete, conclusion-first output, and a delivery checklist for anything actionable — copy-pasteable commands and acceptance criteria, plus known pitfalls and a rollback plan when the blast radius is large — with unverified commands marked as such.
+**工作偏好 — Work preferences**: language conventions (Chinese dialogue, English for outward-facing artifacts), human-facing prose at 80% of ASD-STE100, writing against defensiveness (organize around the value that holds, no process narration, no self-attack on the reader's behalf — honest disclosure is not defensiveness), diagram rules (Mermaid for structure, images from any source embedded actively, a deletion-first discipline with a complexity budget), design for reuse only when the reuse case is concrete, conclusion-first output, and a delivery checklist for anything actionable — copy-pasteable commands and acceptance criteria, plus known pitfalls and a rollback plan when the blast radius is large — with unverified commands marked as such.
 
 **工具纪律 — Tool discipline**: all writes through Write/Edit-type tools, structured-data batch edits one Edit at a time; back off and retry with no silent degradation, inline read-only queries for database cross-checks, rollback-friendly side paths for third-party apps, periodic full reconciliation for registries, stop-and-verify on write anomalies, restart-stable persistence keys, and set-difference verification before writing deletion marks into a host database.
 
