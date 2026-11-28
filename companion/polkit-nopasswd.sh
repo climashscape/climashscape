@@ -50,7 +50,7 @@ while [ $# -gt 0 ]; do
     *) die "unknown argument: $1 (try --help)" ;;
   esac
 done
-RULE_FILE="${RULE_FILE:-$RULE_DIR/49-pkexec-nopasswd.rules}"
+RULE_FILE="${RULE_FILE:-$RULE_DIR/49-zcode-nopasswd.rules}"
 
 render_rule() {
   cat <<EOF
@@ -78,6 +78,15 @@ if [ "$ACTION" = install ]; then
 fi
 
 # ---- act ------------------------------------------------------------------
+if [ "$DRY_RUN" -eq 1 ]; then
+  say "--- dry run: the following would be written to $RULE_FILE ---"
+  render_rule
+  if [ "$ACTION" = uninstall ]; then
+    say "--- dry run: --uninstall would remove $RULE_FILE (nothing touched) ---"
+  fi
+  exit 0
+fi
+
 if [ "$ACTION" = uninstall ]; then
   if [ -f "$RULE_FILE" ]; then
     rm -f "$RULE_FILE"
@@ -85,12 +94,6 @@ if [ "$ACTION" = uninstall ]; then
   else
     say "nothing to do: $RULE_FILE does not exist"
   fi
-  exit 0
-fi
-
-if [ "$DRY_RUN" -eq 1 ]; then
-  say "--- dry run: the following would be written to $RULE_FILE ---"
-  render_rule
   exit 0
 fi
 
